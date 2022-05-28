@@ -1,0 +1,85 @@
+#!/bin/bash
+set -e
+cd $(dirname "$0")
+. config
+
+echo "================================================"
+echo "== CONFIGURATION ==============================="
+echo "================================================"
+echo "containerName=$containerName"
+echo "imageName=$imageName"
+echo "klipperConfigInRoot=$klipperConfigInRoot"
+echo "dockerCommand=$dockerCommand"
+echo ""
+
+function runContainer() {
+    local flag="$1"
+
+    echo "Remove running container:"
+    $dockerCommand rm -f "$containerName";
+
+    echo "Execute container:"
+    mkdir -p "$klipperConfigInRoot"
+    $dockerCommand run $flag  \
+      -v /dev:/dev \
+      -v "$klipperConfigInRoot":/home/klippy/klipper_config/ \
+      --name "$containerName" \
+      --tmpfs /tmp \
+      --tmpfs /run \
+      --tmpfs /run/lock \
+      -v /sys/fs/cgroup:/sys/fs/cgroup:ro \
+      "$imageName"
+}
+
+
+case "$1" in
+
+  "build")
+    cd docker-image;
+    echo "Building of container:"
+    $dockerCommand build . -t "$imageName"
+    ;;
+
+  "runDaemon")
+      echo "Run container as daemon:"
+      runContainer "-d --restart unless-stopped"
+      ;;
+
+  "run")
+        echo "Run container:"
+        runContainer "-ti"
+        ;;
+  "status")
+      echo "Check docker status:"
+      $dockerCommand ps -f name=printer
+      ;;
+  "bash")
+    $dockerCommand exec  --env USER=klippy -u klippy -ti "$containerName" /bin/bash
+    ;;
+
+  "kiuah")
+    $dockerCommand exec  --env USER=klippy -u klippy -ti "$containerName" /home/klippy/kiauh/kiauh.sh
+    ;;
+
+  "restartContainer")
+      $dockerCommand restart "$containerName"
+      ;;
+
+  *)
+    echo "================================================"
+    echo "== Specify command=============================="
+    echo "================================================"
+    echo "$0 build"
+    echo "  Build docker container and run it"
+    echo "$0 runDaemon"
+    echo "  Run container as daemon"
+    echo "$0 run"
+    echo "  Run container with terminal (debug purposes)"
+    echo "$0 status"
+    echo "  get status of container"
+    echo "$0 bash"
+    echo "  Execute bash in the container"
+    echo "$0 kiuah"
+    echo "  Execute kiuah in the container"
+    ;;
+esac

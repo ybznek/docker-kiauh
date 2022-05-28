@@ -1,0 +1,4 @@
+containerName=printer
+imageName=klipper
+klipperConfigInRoot=/klipper/config
+dockerCommand="sudo docker"
