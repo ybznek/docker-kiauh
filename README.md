@@ -1,4 +1,9 @@
-*(Still working in progress)*
+*(Still working in progress, may not work yet)*
+
+TODO
+====
+- Check guide from start to end
+- Do not pass whole /dev/ to container, but use udev rules to pass specific devices
 
 # docker-kiauh
 Guide/helpers how to run Klipper/Moonraker/Mainsail/Fluidd in Docker container via kiuah (https://github.com/th33xitus/kiauh)
