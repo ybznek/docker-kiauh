@@ -69,20 +69,27 @@ If container keeps failing, you can use this command to execute to see output
 ```
 ./docker-kiuah run
 ```
-Usually it keeps failing due to cgroups (you can to find some generic solution for "systemd in docker", it should help here)
+Usually it keeps failing due to cgroups (you can try to find some generic solution for "systemd in docker", it should help here)
 
-- On Ubuntu x86_64 (standard desktop) add
-
-systemd.unified_cgroup_hierarchy=0 to /etc/default/grub  && call sudo update-grub
+**On Ubuntu x86_64 (standard desktop)**
+1) Add systemd.unified_cgroup_hierarchy=0 to /etc/default/grub 
 e.g. :
 ```
 GRUB_CMDLINE_LINUX_DEFAULT="quiet splash systemd.unified_cgroup_hierarchy=0"
 ```
+2) Run
+```
+sudo update-grub
+```
+3) Restart PC
 
-On RPI 4 aarch64 (64 bit OS)
-add systemd.unified_cgroup_hierarchy=false to /boot/cmdline.txt
+**On RPI 4 aarch64 (64 bit OS)**
+1) add systemd.unified_cgroup_hierarchy=false to /boot/cmdline.txt
 e.g. :
 ```
 console=serial0,115200 console=tty1 root=PARTUUID=14b2f967-02 rootfstype=ext4 fsck.repair=yes rootwait systemd.unified_cgroup_hierarchy=false
 ```
+2) Restart RPI
+
+
 Try to execute container in different way, check https://hub.docker.com/r/jrei/systemd-debian
