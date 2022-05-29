@@ -27,6 +27,7 @@ function runContainer() {
       --tmpfs /tmp \
       --tmpfs /run \
       --tmpfs /run/lock \
+      --privileged \
       -v /sys/fs/cgroup:/sys/fs/cgroup:ro \
       "$imageName"
 }
